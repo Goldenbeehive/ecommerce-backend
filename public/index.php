@@ -1,9 +1,30 @@
 <?php
+require_once dirname(__DIR__) . '/vendor/autoload.php';
+ 
+ function handleGraphQL() {
+    $config = [
+        'database' => [
+            'driver' => 'mysql',
+            'host' => 'roundhouse.proxy.rlwy.net:55746',
 
-require_once __DIR__ . '/../vendor/autoload.php';
+            'database' => 'railway',
+            'username' => 'root',
+            'password' => 'QqKAPVAwLxIavRnATpVmPOejFhWFOcLo',
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+        ]
+    ];
+    $dbConfig = $config['database'];
+    $dsn = "{$dbConfig['driver']}:host={$dbConfig['host']};dbname={$dbConfig['database']};charset={$dbConfig['charset']}";
+    $db = new PDO($dsn, $dbConfig['username'], $dbConfig['password']);
+    $graphql = new App\Controller\GraphQL($db);
+    return $graphql->handle();
+}
 
-$dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
-    $r->post('/graphql', [App\Controller\GraphQL::class, 'handle']);
+// Route all requests to GraphQL
+$dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
+    $r->addRoute(['GET', 'POST'], '{path:.*}', 'handleGraphQL');
 });
 
 $routeInfo = $dispatcher->dispatch(
@@ -13,15 +34,8 @@ $routeInfo = $dispatcher->dispatch(
 
 switch ($routeInfo[0]) {
     case FastRoute\Dispatcher::NOT_FOUND:
-        // ... 404 Not Found
-        break;
     case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
-        $allowedMethods = $routeInfo[1];
-        // ... 405 Method Not Allowed
-        break;
     case FastRoute\Dispatcher::FOUND:
-        $handler = $routeInfo[1];
-        $vars = $routeInfo[2];
-        echo $handler($vars);
+        echo handleGraphQL();
         break;
 }
