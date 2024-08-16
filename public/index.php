@@ -5,11 +5,11 @@ require_once dirname(__DIR__) . '/vendor/autoload.php';
     $config = [
         'database' => [
             'driver' => 'mysql',
-            'host' => 'roundhouse.proxy.rlwy.net:55746',
+            'host' => '',
 
-            'database' => 'railway',
-            'username' => 'root',
-            'password' => 'QqKAPVAwLxIavRnATpVmPOejFhWFOcLo',
+            'database' => '',
+            'username' => '',
+            'password' => '',
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
